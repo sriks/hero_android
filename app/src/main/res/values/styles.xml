@@ -1,0 +1,62 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="windowActionBar">false</item>
+
+        <!-- Main theme colors -->
+        <!-- app branding color for the app bar -->
+        <item name="colorPrimary">@color/background_material_dark</item>
+        <!-- darker variant for the status bar and contextual app bars -->
+        <item name="colorPrimaryDark">@color/primary_dark_color</item>
+        <!-- theme UI controls like checkboxes and text fields -->
+        <item name="colorAccent">#FF4081</item>
+
+    </style>
+
+    <!-- ToolBar -->
+    <style name="ToolBarDarkStyle" parent="ThemeOverlay.AppCompat.ActionBar">
+        <!-- android:textColorPrimary is the  color of the title text
+             in the Toolbar, in the Theme.AppCompat theme:  -->
+        <item name="android:textColorPrimary">@color/white</item>
+
+        <!-- android:textColorPrimaryInverse is the  color of the title
+             text in the Toolbar, in the Theme.AppCompat.Light theme:  -->
+        <!-- <item name="android:textColorPrimaryInverse">@color/abc_primary_text_material_light</item> -->
+
+        <!-- android:actionMenuTextColor is the color of the text of
+              action (menu) items in the Toolbar, at least in the
+              Theme.AppCompat theme.
+              For some reason, they already get the textColorPrimary
+              when running on API 21, but not on older versions of
+              Android, so this is only necessary to support older
+              Android versions.-->
+        <item name="actionMenuTextColor">@color/white</item>
+        <!-- android:textColorSecondary is the color of the menu
+             overflow icon (three vertical dots) -->
+        <item name="android:textColorSecondary">@color/white</item>
+
+        <!-- This would set the toolbar's background color,
+              but setting this also changes the popup menu's background,
+              even if we define popupTheme for our <Toolbar> -->
+        <item name="android:background">@color/primary_color</item>
+    </style>
+
+    <style name="PositiveButton" parent="Widget.AppCompat.Button">
+        <item name="android:textColor">@color/white</item>
+        <item name="android:background">@color/primary_color</item>
+        <item name="android:colorPressedHighlight">@color/primary_dark_color</item>
+    </style>
+
+    <style name="LinkButton" parent="Widget.AppCompat.Button">
+        <item name="android:textColor">@color/link_text_material_dark</item>
+        <item name="android:background">@color/transparent</item>
+        <item name="android:colorPressedHighlight">@color/primary_dark_color</item>
+    </style>
+
+    <!-- EditText -->
+
+    <!--<style name="EditTextStyle" parent="Widget.AppCompat.EditText">-->
+
+    <!--</style>-->
+</resources>
