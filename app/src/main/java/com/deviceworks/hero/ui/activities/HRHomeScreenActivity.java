@@ -38,6 +38,8 @@ public class HRHomeScreenActivity extends HRBaseActivity implements
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
         mDrawerToggle.setDrawerIndicatorEnabled(true);
+
+        HRServerManager.instance().registerForPN();
     }
 
     @Override
