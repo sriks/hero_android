@@ -8,6 +8,7 @@ import android.util.Log;
 
 import com.deviceworks.hero.core.user.HRUser;
 import com.parse.Parse;
+import com.parse.ParseCrashReporting;
 import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseInstallation;
@@ -41,6 +42,7 @@ public class HRServerManager {
     }
 
     public void initialize(Context context, Class<? extends Activity> pushClass) {
+        ParseCrashReporting.enable(context);
         Parse.initialize(context, "2FFZFbjK9tOdu8ZTuWLN8Oxg7FN968JK6CIGeuGO", "WHPXcS4QWG54RURQVMkphrns4c1kXaSudw4sq19f");
     }
 
