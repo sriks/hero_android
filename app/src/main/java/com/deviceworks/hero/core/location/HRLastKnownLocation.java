@@ -41,6 +41,7 @@ public class HRLastKnownLocation implements GoogleApiClient.ConnectionCallbacks,
     }
 
     public void getLastKnownLocation(OnLocationReceivedListener cb) {
+        // TODO: Check if location services are off and send correct error code.
         mLastKnownLocationListener = new WeakReference<>(cb);
         if (!mGoogleApiClient.isConnected() && !mGoogleApiClient.isConnecting()) {
             mGoogleApiClient.connect();

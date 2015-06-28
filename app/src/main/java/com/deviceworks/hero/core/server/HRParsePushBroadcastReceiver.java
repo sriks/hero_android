@@ -53,11 +53,9 @@ public class HRParsePushBroadcastReceiver extends ParsePushBroadcastReceiver {
                 }
             });
         } else {
-
+            // TODO: Remove after dev and move to else.
+            super.onPushReceive(context, intent);
         }
-
-        // TODO: Remove after dev and move to else.
-        super.onPushReceive(context, intent);
     }
 
     @Override

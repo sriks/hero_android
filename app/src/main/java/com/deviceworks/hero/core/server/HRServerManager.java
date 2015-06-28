@@ -14,7 +14,9 @@ import com.parse.ParseGeoPoint;
 import com.parse.ParseInstallation;
 import com.parse.ParseObject;
 import com.parse.ParsePush;
+import com.parse.ParseSession;
 import com.parse.SaveCallback;
+import com.parse.SendCallback;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -32,8 +34,8 @@ public class HRServerManager {
         static final String collectionLocations                     =       "Locations";
     }
 
-    private static String kActionIamHereFormat                      =       "hr://imamhere?from=%s&objid=%s";
     private static HRServerManager sInstance = null;
+    private static String kActionIamHereFormat                        =       "hr://imamhere/v1?from=%s&lat=%.6f&lng=%.6f";
 
     public static HRServerManager instance() {
         if (sInstance == null)
@@ -60,43 +62,39 @@ public class HRServerManager {
     }
 
     public void updateWhereAreYouResult(final HRWhereAreYou whereAreYou, final UpdateWhereAreYouCallback cb) {
-        final ParseObject toUpdateObj = new ParseObject(ParseConstants.collectionLocations);
-        HRWhereAreYou.Response response = whereAreYou.getResponse();
-        final Location location = response.getLocation();
-        toUpdateObj.put(HRServerConstants.ServerKeys.locationInfo,
-                toResultJSON(location));
-        toUpdateObj.put(HRServerConstants.ServerKeys.location,
-                new ParseGeoPoint(location.getLatitude(), location.getLongitude()));
-        toUpdateObj.put(HRServerConstants.ServerKeys.timeForLocationLock, response.getTimeTookForLocationLock());
-        toUpdateObj.put(HRServerConstants.ServerKeys.userObjectId, HRUser.getInstance().getObjectId());
-        toUpdateObj.put(HRServerConstants.ServerKeys.requestedBy, whereAreYou.getRequest().getRequesterObjId());
-        toUpdateObj.put(HRServerConstants.ServerKeys.error, response.getErrorReason());
-        toUpdateObj.saveInBackground(new SaveCallback() {
-            @Override
-            public void done(ParseException e) {
-                if (e == null) {
-                    sendClientPush(toUpdateObj.getObjectId(), whereAreYou, cb);
-                } else {
-                    cb.onWhereAreYouUpdated(whereAreYou, e);
-                }
-            }
-        });
+        sendClientPush(whereAreYou, 3, cb);
     }
 
-    private void sendClientPush(final String objectId, final HRWhereAreYou whereAreYou, final UpdateWhereAreYouCallback cb) {
+    private void sendClientPush(final HRWhereAreYou whereAreYou, final int retries, final UpdateWhereAreYouCallback cb) {
         try {
             ParsePush push = new ParsePush();
             HRWhereAreYou.Request req = whereAreYou.getRequest();
             push.setChannel(req.getRequesterObjId());
+            final Location location = whereAreYou.getResponse().getLocation();
             String iAmHereAction = String.format(kActionIamHereFormat,
                     HRUser.getInstance().getObjectId(),
-                    objectId);
+                    location.getLatitude(),
+                    location.getLongitude());
+
             JSONObject data = new JSONObject();
-            data.put("alert", "Found at "+whereAreYou.getResponse().getLocation().toString());
+            String alert = String.format("Found %s", HRUser.getInstance().getName());
+            data.put("alert", alert);
             data.put("a", iAmHereAction);
             push.setData(data);
-            push.sendInBackground();
-            cb.onWhereAreYouUpdated(whereAreYou, null);
+            push.sendInBackground(new SendCallback() {
+                @Override
+                public void done(ParseException e) {
+                    // TODO: When retires are done, save as an issue to server AND
+                    // TODO: Add a future task to send response when network is ready.
+                    if ((e != null) && (retries > 0)) {
+                        // Retry
+                        sendClientPush(whereAreYou, retries-1, cb);
+                    } else {
+                        // Done with retries or all is well.
+                        cb.onWhereAreYouUpdated(whereAreYou, null);
+                    }
+                }
+            });
         } catch (JSONException e) {
             e.printStackTrace();
             cb.onWhereAreYouUpdated(whereAreYou, e);
@@ -127,35 +125,36 @@ public class HRServerManager {
 
 // eof
 
+// Legacy code for reference
 
 //    public void updateWhereAreYouResult(final HRWhereAreYou whereAreYou, final UpdateWhereAreYouCallback cb) {
-//        ParseQuery<ParseObject> query = new ParseQuery<>(ParseConstants.collectionLocateRequest);
-//        query.whereEqualTo(HRServerConstants.ServerKeys.objectId, whereAreYou.getRequest().getTargetObjId());
-//        query.findInBackground(new FindCallback<ParseObject>() {
+//        // TODO: Send location as part of push notification
+//        final ParseObject toUpdateObj = new ParseObject(ParseConstants.collectionLocations);
+//        HRWhereAreYou.Response response = whereAreYou.getResponse();
+//        final Location location = response.getLocation();
+//        toUpdateObj.put(HRServerConstants.ServerKeys.locationInfo,
+//                toResultJSON(location));
+//        toUpdateObj.put(HRServerConstants.ServerKeys.location,
+//                new ParseGeoPoint(location.getLatitude(), location.getLongitude()));
+//        toUpdateObj.put(HRServerConstants.ServerKeys.timeForLocationLock, response.getTimeTookForLocationLock());
+//        toUpdateObj.put(HRServerConstants.ServerKeys.userObjectId, HRUser.getInstance().getObjectId());
+//        toUpdateObj.put(HRServerConstants.ServerKeys.requestedBy, whereAreYou.getRequest().getRequesterObjId());
+//        toUpdateObj.put(HRServerConstants.ServerKeys.error, response.getErrorReason());
+//        toUpdateObj.saveInBackground(new SaveCallback() {
 //            @Override
-//            public void done(List<ParseObject> list, ParseException e) {
-//                if (list != null && !list.isEmpty()) {
-//                    ParseObject toUpdateObj = list.get(0);
-//                    if (whereAreYou.getResponse().hasError()) {
-//                        toUpdateObj.put(HRServerConstants.ServerKeys.error,
-//                                whereAreYou.getResponse().getErrorReason());
-//                    } else {
-//                        final Location location = whereAreYou.getResponse().getLocation();
-//                        toUpdateObj.put(HRServerConstants.ServerKeys.response,
-//                                toResultJSON(location));
-//                        toUpdateObj.put(HRServerConstants.ServerKeys.location,
-//                                new ParseGeoPoint(location.getLatitude(), location.getLongitude()));
-//                        toUpdateObj.saveInBackground(new SaveCallback() {
-//                            @Override
-//                            public void done(ParseException e) {
-//                                //cb.onWhereAreYouUpdated(whereAreYou, e);
-//                                sendClientPush(whereAreYou, cb);
-//                            }
-//                        });
-//                    }
+//            public void done(ParseException e) {
+//                if (e == null) {
+//                    sendClientPush(toUpdateObj.getObjectId(), whereAreYou, cb);
 //                } else {
+//                    ParseObject issueObj = new ParseObject("Issues");
+//                    issueObj.put("description", (e.getMessage() != null)?(e.getMessage()):"No desc");
+//                    issueObj.put("error_code", e.getCode());
+//                    issueObj.put("action", whereAreYou.getRequest().getActionUri());
+//                    issueObj.put(HRServerConstants.ServerKeys.userObjectId, HRUser.getInstance().getObjectId());
+//                    issueObj.saveEventually();
 //                    cb.onWhereAreYouUpdated(whereAreYou, e);
 //                }
 //            }
 //        });
 //    }
+

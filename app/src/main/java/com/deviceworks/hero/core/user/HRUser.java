@@ -12,6 +12,10 @@ import com.parse.SignUpCallback;
  */
 public class HRUser {
 
+    private static class UserKeys {
+        public static String name                           =   "name";
+    }
+
     public interface OnSignupCompletionListener {
         void onSignupCompleted(NewUserInfo newUserInfo, Exception e);
     }
@@ -45,6 +49,10 @@ public class HRUser {
 
     public static boolean isLoggedIn() {
         return (ParseUser.getCurrentUser() != null);
+    }
+
+    public String getName() {
+        return ParseUser.getCurrentUser().getString(UserKeys.name);
     }
 
     public void signup(final NewUserInfo newUserInfo, final OnSignupCompletionListener cb) {

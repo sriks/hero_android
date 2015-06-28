@@ -34,6 +34,7 @@ public class HRWhereAreYou {
     public class Request {
         public String mRequester;
         public String mTarget;
+        String mActionUri;
 
         public Request(Intent intent) {
             try {
@@ -42,6 +43,7 @@ public class HRWhereAreYou {
                 Uri uri = Uri.parse(actionUri);
                 mRequester = uri.getQueryParameter(HRServerConstants.ServerKeys.from);
                 mTarget = uri.getQueryParameter(HRServerConstants.ServerKeys.target);
+                mActionUri = uri.toString();
             } catch (JSONException exception) {
                 exception.printStackTrace();
                 throw new RuntimeException(exception.getMessage());
@@ -54,6 +56,10 @@ public class HRWhereAreYou {
 
         public String getTargetObjId() {
             return mTarget;
+        }
+
+        public String getActionUri() {
+            return mActionUri;
         }
     }
 
