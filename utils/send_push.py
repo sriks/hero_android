@@ -11,8 +11,9 @@ connection.request('POST', '/1/push', json.dumps({
         "channels": params["to"]
     },
     "data": {
-        "alert": params["alert"],
-        "a": params["a"]
+        # "alert": params["alert"],
+        "a": params["a"],
+        "content-available": 1
     }
 }), {
     "X-Parse-Application-Id": params["X-Parse-Application-Id"],

@@ -1,0 +1,27 @@
+
+
+
+hr://imamhere/v1?from=tDg0WCi1r2&lat=17.491094&lng=78.369438
+
+hr://imamhere/v1?from=<>&lat=<lat>&lng=<lng>&error=<error_code>
+
+lat:
+lng:
+uat: Updated At timestamp
+err:
+
+hr://whereareyou?from=admin&target=fZhIK5O3Zf&uid=myuid8
+hr://imamhere?from=tDg0WCi1r2&objid=hFPp4Wgv1y
+
+
+
+Location Provider
+Out of mem
+
+{
+    a = "hr://imamhere?from=tDg0WCi1r2&objid=hFPp4Wgv1y";
+    aps =     {
+        alert = "Found at Location[fused 17.491021,78.369449 acc=35 et=+9h48m41s669ms]";
+    };
+}
+
